@@ -52,7 +52,7 @@ IF (nout GT 0) THEN BEGIN
 	ENDIF
 ; If removing an array of element	
 IF (sz GT 1) THEN BEGIN
-	indx = indx[UNIQ(indx,SORT(indx)]
+	indx = indx[UNIQ(indx,SORT(indx))]
 	; Create an array of indices to include
 	; At first they are all included, because indgen is all positive
 	include = INDGEN(szarr)
