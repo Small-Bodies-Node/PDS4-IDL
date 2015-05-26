@@ -6,11 +6,11 @@ FUNCTION READ_XML8,filename, outFile=outFile, validation = validation
 ; PURPOSE:
 ;	READ an XML document file into IDL (Interactive Data Language, ITT).  
 ;	This function is specifically for IDL version 8 and above because
-;	it uses both Hashes and Lists which were introduced in version 8.
-;	Output is an IDL Hash with Lists for repeating elements.
+;	it uses both OrderedHashes and Lists which were introduced in version 8.
+;	Output is an IDL Ordered Hash with Lists for repeating elements.
 ;	This function reads the file and parses the XML document into a DOM
 ;	(Document Object Model) object or IDLffXMLDOMDocument.
-;	It passes oDoc to XML2IDL_order which walks through the nodes creating the hash.  
+;	It passes oDoc to XML2IDL8 which walks through the nodes creating the hash.  
 ;
 ; CATEGORY:
 ;	Datafile handling; XML
@@ -43,7 +43,7 @@ FUNCTION READ_XML8,filename, outFile=outFile, validation = validation
 ;	validation - Turns on validation of xml file
 ;	
 ; PROCEDURES USED:
-;	XML2IDL_order
+;	XML2IDL8
 ;	
 ; PACKAGE LOCATION:
 ;	http://www.astro.umd.edu/~eshaya/PDS/pds4readxml.tar
@@ -52,7 +52,7 @@ FUNCTION READ_XML8,filename, outFile=outFile, validation = validation
 ;	Written by Ed Shaya / U. of Maryland [Nov 5, 2013]
 ;	Removed path variable.  Now filename should contain path if needed. ES/Dec 3, 2013.
 ;	Switched to ordered hash so elements stay in order.  Now using
-;	XML2IDL_order.pro.  ES/Oct 10, 2014.
+;	XML2IDL8.pro.  ES/Oct 10, 2014.
 ;	Removed use of prettyhash (toscreen) since IDL now does this
 ;	natively when you enter the hash name ES/Oct 10, 2014
 ;-
@@ -78,7 +78,7 @@ FUNCTION READ_XML8,filename, outFile=outFile, validation = validation
       /exclude_ignorable_whitespace,schema_checking=validation,/expand_entity_references)
 
   ; Build structure
-  hash = XML2IDL_order(oDoc)
+  hash = xml2idl8(oDoc)
 
   ; clean up
   OBJ_DESTROY, oDoc

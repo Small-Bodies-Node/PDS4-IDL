@@ -34,7 +34,7 @@ FUNCTION READ_VOTABLE8,filename, metadata=metadata
 ;
 ;
 ; PROCEDURES USED:
-;	READ_XML8, XML2IDL_order
+;	READ_XML8
 ;
 ; PACKAGE LOCATION:
 ;	http://www.astro.umd.edu/~eshaya/PDS/pds4readxml.tar
