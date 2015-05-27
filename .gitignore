@@ -1,3 +1,5 @@
 makehtml/
 *~
 *.sh
+out.html
+inpro
