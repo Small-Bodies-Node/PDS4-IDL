@@ -1,5 +1,5 @@
 FUNCTION READ_XML,filename, toScreen=toScreen, outFile=outFile, $
-	paramsOut=paramsOut
+	paramsOut=paramsOut,validation=validation
 ;+
 ; NAME:
 ;	READ_XML
@@ -33,8 +33,10 @@ FUNCTION READ_XML,filename, toScreen=toScreen, outFile=outFile, $
 ;
 ;	outFile - If set to a filename, will save paramArr or tags to that file
 ;
-;	paramsOut - If set to 1, Result is paramArr instead of structure
+;	paramsOut - If set to 1, Result is paramArr instead of structure.
 ;	
+;	validation - If set to 1, schema_checking or DTD validation occurs.
+;
 ; PROCEDURES USED:
 ;	PARSE_PARAMETER, PDSPAR, XML2IDL, GET_TAGS
 ;
@@ -46,11 +48,12 @@ FUNCTION READ_XML,filename, toScreen=toScreen, outFile=outFile, $
 ;	Modified to allow for single and double quotes within a text node.Ed Shaya [May 29, 2012]
 ;	Removed path variable.  Now filename should contain path if needed ES [Dec 3, 2013]
 ;	Fixed a bug which left off an element that had tried but failed to append to 
-;	array of elements of the same name.  ES [Nov 17, 2014]
+;	array of elements of the same name. [ES/Nov 17, 2014]
+;	Added  validation flag. [ES/July 8, 2015]
 ;-
 ;-----------------------------------------------------------------
 
-  IF (N_PARAMS() Lt 1) THEN BEGIN
+  IF (N_PARAMS() LT 1) THEN BEGIN
 	PRINT, 'usage: Result = READ_XML(filename, toScreen=toScreen, outFile=outFile,paramsOut=paramsOut)'
 	RETURN,0
   ENDIF
@@ -58,6 +61,7 @@ FUNCTION READ_XML,filename, toScreen=toScreen, outFile=outFile, $
   IF ~KEYWORD_SET(toScreen) THEN toScreen = 0
   IF ~KEYWORD_SET(outFile) THEN outFile = ''
   IF ~KEYWORD_SET(paramsOut) THEN paramsOut = 0
+  IF ~KEYWORD_SET(validation) THEN validation = 0
 
   ; Need to seed paramArr with a first element
   IF (paramsOut EQ 0) THEN paramArr = ['-1'] ELSE paramArr = ['1']
@@ -76,8 +80,8 @@ FUNCTION READ_XML,filename, toScreen=toScreen, outFile=outFile, $
   ;PRINT, '<!DOCTYPE VOTABLE SYSTEM "http://cdsweb.u-strasbg.fr/xml/VOTable.dtd">'
 
   print,filename
-  oDoc = OBJ_NEW('IDLffXMLDOMDocument', FILENAME=filename, schema_checking=0,$
-      /exclude_ignorable_whitespace,validation_mode=1,/expand_entity_references)
+  oDoc = OBJ_NEW('IDLffXMLDOMDocument', FILENAME=filename, schema_checking=validation,$
+      /exclude_ignorable_whitespace,validation_mode=validation,/expand_entity_references)
 
   ; Build structure or paramArr
   XML2IDL, oDoc, struct=struct, paramArr=paramArr

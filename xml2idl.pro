@@ -81,6 +81,8 @@ PRO XML2IDL, oNode,level=level,nodeName=nodeName,nodeValue=nodeValue,$
 ; MODIFICATION HISTORY:
 ;	Written by Ed Shaya / U. of Maryland [April 27, 2012]
 ;	Modified by Ed Shaya [May 4, 2012] - 
+;       Changes all of the ANDs to && to speed it up and to fix a bug when using
+;          IDL version 6 where index cannot be -1.
 ;-
 ;---------------------------------------------
  
@@ -159,7 +161,7 @@ PRO XML2IDL, oNode,level=level,nodeName=nodeName,nodeValue=nodeValue,$
 		ENDFOR
 	   END
 	3: BEGIN ; Handle TextNode
-		IF (nodeValue2 NE '' AND nodeValue2 NE ' ') THEN BEGIN
+		IF (nodeValue2 NE '' && nodeValue2 NE ' ') THEN BEGIN
    	   	indent = STRING(REPLICATE(32B,FIX(level)*3))
 		; If there is a space in nodeValue, then quote it
 		keyval = parse_parameter(paramArr[0])
@@ -192,7 +194,7 @@ PRO XML2IDL, oNode,level=level,nodeName=nodeName,nodeValue=nodeValue,$
    ; Add quotes on values for structure.
    ; First remove double quotes if at beginning and end.
      IF (nodeValue NE '') THEN BEGIN
-   IF (STRMID(nodeValue,0,1) EQ '"' AND $
+   IF (STRMID(nodeValue,0,1) EQ '"' && $
 	   STRMID(nodeValue,0,1,/reverse_offset) EQ '"') THEN BEGIN
    	   nodeValue = STRMID(nodeValue,1)
    	    nodeValue = STRMID(nodeValue,1,/reverse_offset)
@@ -201,7 +203,7 @@ PRO XML2IDL, oNode,level=level,nodeName=nodeName,nodeValue=nodeValue,$
 	   ; Check for apostrope and quote
 	   	quotes = STRPOS(nodeValue,'"') 
 	   	squotes = STRPOS(nodeValue,"'")
-	   	IF (quotes NE -1 AND squotes NE -1) THEN BEGIN
+	   	IF (quotes NE -1 && squotes NE -1) THEN BEGIN
 	   	   nodeValue = STRJOIN(STRSPLIT(nodeValue,'"',/extract),'&quot;')
          nodeValue = '"'+nodeValue+'"'
       ENDIF ELSE BEGIN
@@ -285,7 +287,7 @@ PRO XML2IDL, oNode,level=level,nodeName=nodeName,nodeValue=nodeValue,$
 
 		  ; Elements without PCDATA.  Either empty or it has child elements
 		  ; and these go into elNames. 
-		  IF (childName NE '_text' AND childName NE '_comment') THEN BEGIN
+		  IF (childName NE '_text' && childName NE '_comment') THEN BEGIN
 			   elName = childName
 			   IF (elNames[0] EQ '') THEN BEGIN ; First one
       		   		elNames = [elName]
@@ -294,7 +296,7 @@ PRO XML2IDL, oNode,level=level,nodeName=nodeName,nodeValue=nodeValue,$
 			   ENDELSE
 ;			   IF (childname eq 'Internal_Reference') then stop
          Nels = N_ELEMENTS(elNames)
-			   IF (Nels GE 2 AND elName EQ elNames[Nels-2]) THEN BEGIN  
+			   IF (Nels GE 2 && elName EQ elNames[Nels-2]) THEN BEGIN  
 			  	  ; Handle repeat of child element
 			      ; Check if struct and previous struct are 
 			      ; compatible to be put into an array.  	
@@ -348,7 +350,7 @@ PRO XML2IDL, oNode,level=level,nodeName=nodeName,nodeValue=nodeValue,$
 			   STOP
 		   ENDIF
 		   struct = {_text : ''}
-		   IF (childName NE '_text' AND childName NE '_comment') THEN $
+		   IF (childName NE '_text' && childName NE '_comment') THEN $
 		         prevElName =  childName  
 		   
 	   ENDIF ; if struct
@@ -404,12 +406,9 @@ PRO XML2IDL, oNode,level=level,nodeName=nodeName,nodeValue=nodeValue,$
 
    IF (paramArr[0] NE '-1') THEN BEGIN ; Close OBJECT in paramArr or 
 	   				; finish up paramArr
-   	IF (nodeName NE '_text' AND $
-	    childNames[0] NE '_text' AND $
-	    nodeName NE '_comment' AND $
-	    nodeType NE 7 AND $
-	    nodeType NE 10 AND $
-	    level NE '0') THEN $
+   	IF (nodeName NE '_text' && childNames[0] NE '_text' && $
+	    nodeName NE '_comment' && nodeType NE 7 && $
+	    nodeType NE 10 && level NE '0') THEN $
 	   paramArr = [indent+'END_OBJECT = '+StrUpCase(nodeName), paramArr]
 
    	IF (level EQ 0) THEN BEGIN

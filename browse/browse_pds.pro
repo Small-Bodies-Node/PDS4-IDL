@@ -90,7 +90,7 @@ status.metadatatextid = WIDGET_COMBOBOX(top, /editable,$
 
 ; Add a graphics window on rightside
 if havedata then begin
-	SET_PLOT,'X'
+;	SET_PLOT,'X'
 	!P.MULTI = 0
 	!P.COLOR = !D.N_COLORS-1
 	!P.BACKGROUND = 0
