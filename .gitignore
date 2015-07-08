@@ -3,3 +3,4 @@ makehtml/
 *.sh
 out.html
 inpro
+*.swp
