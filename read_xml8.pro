@@ -75,7 +75,7 @@ FUNCTION READ_XML8,filename, outFile=outFile, validation = validation
 
   ; Parse XML file into a DOM object 
   oDoc = OBJ_NEW('IDLffXMLDOMDocument', FILENAME=filename,$
-      /exclude_ignorable_whitespace,schema_checking=validation,/expand_entity_references)
+      /exclude_ignorable_whitespace,schema_checking=validation,validation_mode=validation,/expand_entity_references)
 
   ; Build structure
   hash = xml2idl8(oDoc)

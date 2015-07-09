@@ -147,7 +147,7 @@ FUNCTION XML2IDL8,oNode,nodeName=nodeName,nodeValue=nodeValue
 	    ENDIF
 	    
 	    ; Non empty _text and _comments
-	    IF (childValue NE '' AND (childName EQ '_text' OR childname EQ '_comment')) THEN BEGIN
+	    IF (childValue NE '' && (childName EQ '_text' || childname EQ '_comment')) THEN BEGIN
 	        ; Concatenate these strings with a single space if multiple
 	        multiple = 0
 	        IF (N_ELEMENTS(childHash) NE 0) THEN $

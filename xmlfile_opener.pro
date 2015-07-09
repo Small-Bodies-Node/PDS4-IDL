@@ -24,7 +24,7 @@ END
 PRO xmlfile_opener
    COMMON openercom, fstate
    base = WIDGET_BASE(TITLE ='Open XML PDS File', /COLUMN)
-   filesel = CW_FILESEL(base, /IMAGE_FILTER, FILTER='.xml',/FIX_FILTER)
+   filesel = CW_FILESEL(base, /IMAGE_FILTER, FILTER='.xml',/FIX_FILTER,/frame)
    file=''
    fstate = {file:file}
    WIDGET_CONTROL, base, /REALIZE

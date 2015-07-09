@@ -75,7 +75,7 @@ FUNCTION READ_PDS,file,datastatus=datastatus,metadata=metadata, $
 
   COMMON openercom, fstate
 
-;Begin the error handler:
+  ;Begin the error handler:
   CATCH, Error_status
   IF Error_status NE 0 THEN BEGIN
     PRINT, 'Error index: ', Error_status 
