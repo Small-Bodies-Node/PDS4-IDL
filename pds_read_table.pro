@@ -185,7 +185,6 @@
   descriptions = CREATE_STRUCT(tags[Nfields-1],description[Nfields-1]) 
   FOR dd = Nfields-2, 0, -1 DO $
 	descriptions = CREATE_STRUCT(tags[dd], description[dd],descriptions)
-
   recordstruc = create_tablestruc(tags,datatype,repetitions, field_length,tabletype)
   recordarr = REPLICATE(recordstruc, records)
 	

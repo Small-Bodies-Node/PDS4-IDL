@@ -41,6 +41,7 @@ FUNCTION READ_XML8,filename, outFile=outFile, validation = validation
 ;	outFile - If set to a filename, will save pretty printout to that file
 ;
 ;	validation - Turns on validation of xml file
+;			The Schema or DTD need to on local disk.
 ;	
 ; PROCEDURES USED:
 ;	XML2IDL8

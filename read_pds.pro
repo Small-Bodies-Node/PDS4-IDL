@@ -269,7 +269,7 @@ FUNCTION READ_PDS,file,datastatus=datastatus,metadata=metadata, $
 	     ; IF (idlVersion ge 8.0) THEN $
 	     ; hdr_0 = headertohash(hdr,comments=comments_0) 
 
-             NHeaders++  ; incriment image number and create a structure for array
+             NHeaders++  ; increment image number and create a structure for array
              headern = 'header' + STRTRIM(STRING(NHeaders),1)
              IF (name EQ 'Unknown') THEN name = headern
              Result = EXECUTE(name + $
@@ -443,8 +443,6 @@ FUNCTION READ_PDS,file,datastatus=datastatus,metadata=metadata, $
 	 tabletype = dataset_split[1]
 	 Ntables++
 
-	 table = pds_read_table(unit,meta,cursor,Ntables,tabletype,nonans)
-	 tablen = 'table' + STRTRIM(STRING(Ntables),1)
 	 ; If there is a local_identifier use that for tablename.
 	 ; But, make if idl valid if needed.
 	 IF TOTAL(STRMATCH(TAG_NAMES(meta),'LOCAL_IDENTIFIER') EQ 1) THEN $
@@ -452,6 +450,9 @@ FUNCTION READ_PDS,file,datastatus=datastatus,metadata=metadata, $
 	                               /convert_all, /convert_spaces) $
 	 ELSE $
 	     table_name = tablen  
+     print,table_name
+	 table = pds_read_table(unit,meta,cursor,Ntables,tabletype,nonans)
+	 tablen = 'table' + STRTRIM(STRING(Ntables),1)
 	 Result = EXECUTE(table_name + " = table")
 	 execString += ', '+ table_name + ' : ' + table_name
 		  END ; 'TABLE'
