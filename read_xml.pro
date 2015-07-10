@@ -36,6 +36,7 @@ FUNCTION READ_XML,filename, toScreen=toScreen, outFile=outFile, $
 ;	paramsOut - If set to 1, Result is paramArr instead of structure.
 ;	
 ;	validation - If set to 1, schema_checking or DTD validation occurs.
+;                    Schema or DTD need to be on local disk
 ;
 ; PROCEDURES USED:
 ;	PARSE_PARAMETER, PDSPAR, XML2IDL, GET_TAGS

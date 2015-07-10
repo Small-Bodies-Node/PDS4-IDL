@@ -37,6 +37,7 @@ FUNCTION CREATE_TABLESTRUC, tags, datatype, repetitions, field_length, tabletype
 ;	Added ASCII_DATE DOY, YMD, and UTC types (March 26, 2015, EJS).
 ;	Change ASCII_Numeric_Base2 to be read into strings and ASCII_Numeric_Base8 
 ;	  and _Base16 to be read into Longs.  (March 28, 2015, EJS).
+; 	Fixed bug in reading ASCII array within a Binary Table (ES/July 9, 2015)
 ;
 ;-
 ;-----------------------------------------------------------------
@@ -122,16 +123,20 @@ ENDIF ELSE BEGIN ; Now handle binary table input
         reps = '('+ STRJOIN(STRTRIM(STRING(repet[*]),1),",",/single)+') ' $
       ELSE $
         reps = '('+ STRTRIM(STRING(repet[0]),1)+') '
+
+
+
       CASE datatype[i] OF
-      'ASCII_String':            values += ', STRARR'+reps  
-      'ASCII_Date_DOY':          values += ', STRARR'+reps                
-      'ASCII_Date_YMD':          values += ', STRARR'+reps  
-      'ASCII_Date_Time_DOY':     values += ', STRARR'+reps  
-      'ASCII_Date_Time_YMD':     values += ', STRARR'+reps  
-      'ASCII_Date_Time_DOY_UTC': values += ', STRARR'+reps  
-      'ASCII_Date_Time_YMD_UTC': values += ', STRARR'+reps  
-      'SignedByte':              values += ', BYTARR'+reps
-      
+
+	'ASCII_String':			values += ', ASCIIARR_'
+	'ASCII_Date_DOY':		values += ', ASCIIARR_'
+	'ASCII_Date_YMD':		values += ', ASCIIARR_'
+	'ASCII_Date_Time_DOY':		values += ', ASCIIARR_'
+	'ASCII_Date_Time_YMD':		values += ', ASCIIARR_'
+	'ASCII_Date_Time_DOY_UTC':	values += ', ASCIIARR_'
+	'ASCII_Date_Time_YMD_UTC':	values += ', ASCIIARR_'
+
+      'SignedByte':       values += ', BYTARR'+reps
       'SignedMSB2':       values += ', INTARR'+reps
       'SignedMSB4':       values += ', LONARR'+reps
       'SignedMSB8':       values += ', LON64ARR'+reps
@@ -159,6 +164,20 @@ ENDIF ELSE BEGIN ; Now handle binary table input
         STOP
        END
       ENDCASE
+
+      ; For ASCII need to form array with correct length strings
+      IF STRMID(datatype[i],0,5) EQ 'ASCII' THEN BEGIN
+	        ; This makes a string of length = field_length
+        	asciiv = STRJOIN(REPLICATE("a",field_length[i])) 
+		si = strtrim(string(i),2)
+		; This does a = STRARR(N,M)
+		result = EXECUTE('asciiarr_' + si + ' = STRARR'+reps)
+		; This does a[*] = asciiv
+		result = EXECUTE('asciiarr_' + si +'[*] = asciiv')
+		; Add _N to make values unique.
+		values += si+' '
+	ENDIF
+
       ENDELSE ; end array or scalar binary field
   ENDFOR ; end loop over fields 
 ENDELSE ; end binary or not
