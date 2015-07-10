@@ -444,13 +444,13 @@ FUNCTION READ_PDS,file,datastatus=datastatus,metadata=metadata, $
 	 Ntables++
 
 	 ; If there is a local_identifier use that for tablename.
-	 ; But, make if idl valid if needed.
+	 ; But, make idl_valid if needed.
 	 IF TOTAL(STRMATCH(TAG_NAMES(meta),'LOCAL_IDENTIFIER') EQ 1) THEN $
 	   table_name = IDL_VALIDNAME(meta.local_identifier._text, $
 	                               /convert_all, /convert_spaces) $
 	 ELSE $
 	     table_name = tablen  
-     print,table_name
+
 	 table = pds_read_table(unit,meta,cursor,Ntables,tabletype,nonans)
 	 tablen = 'table' + STRTRIM(STRING(Ntables),1)
 	 Result = EXECUTE(table_name + " = table")
