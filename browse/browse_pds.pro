@@ -33,10 +33,13 @@
 ;         http://www.astro.umd.edu/~eshaya/PDS/pds4readxml.tar
 ;
 ;
-; IDL VERSIONS TESTED: 8.2
+; IDL VERSIONS TESTED: 8.4
 ;
 ; MODIFICATION HISTORY:
 ; Written by Ed Shaya / U. of Maryland[Sept. 25, 2012]. 
+;   Major rewrite: increased speed, reduced lines of code, most data text
+;   nodes do not need to open a new window, arrays of length 1 now
+;   show up.  addleaf2tree.pro no longer needed. (ES-7/29/15)
 ;-
 ;-----------------------------------------------------------------
 FUNCTION browse_pds, pdsfile, no_reorient=no_reorient
@@ -102,9 +105,9 @@ loadct,0
 control = WIDGET_BASE(rightside,row=1,ysize=50)
 control2 = WIDGET_BASE(rightside,row=1,ysize=50)
 ; Create slider for min/max value of image
-sldmin = CW_FSLIDER(control,/drag,title='Min Counts',min=0.,max=256.,value=0.,uval='mincounts',xsize=230,/edit)
+sldmin = CW_FSLIDER(control,/drag,title='Min Counts',min=0d0,max=256.d0,value=0.d0,uval='mincounts',xsize=230,/edit)
 status.sldminid = sldmin
-sldmax = CW_FSLIDER(control,/drag,title='Max Counts',min=0.,max=256.,value=256., uval='maxcounts', xsize=230,/edit)
+sldmax = CW_FSLIDER(control,/drag,title='Max Counts',min=0d0,max=256.d0,value=256.d0, uval='maxcounts', xsize=230,/edit)
 status.sldmaxid = sldmax
 ; Create label widgets to hold the cursor position and Hexadecimal
 ; value of the pixel under the cursor.
@@ -113,60 +116,25 @@ status.sldmaxid = sldmax
   status.ImValue = WIDGET_label(control2, XSIZE=130, VALUE='Value:', frame=2)
 endif
 
-; Add root for Metadata Tree
-root = WIDGET_TREE(metatree,value='METADATA',uvalue='metadatatree',/folder,/expanded)
-metaidhash = HASH('METADATA',root)
-tags = tag_names(metadata)
+; Create Metadata Tree starting at root
+tag = 'METADATA'
+fulltag = 'DATA'
+parent = metatree
+metaidhash = ORDEREDHASH()
+addstruct2tree,metadata,tag,fulltag,parent,metaidhash,/meta
 
-; Add each metadata tag to the tree
-FOR i = 0, N_ELEMENTS(tags)-1 DO BEGIN
-        ;elements = STRSPLIT(tags[i],'.',/extract,count=count)
-	tag = tags[i]
-	fulltag = 'METADATA'+'.'+tag
-	result = EXECUTE('type = size('+fulltag+',/tname)')
-	result = EXECUTE('dim = size('+fulltag+',/dimension)')
-	parent=root
-	dim = dim > 1
-	FOR j = 0,dim[0]-1 DO BEGIN
-		IF (dim[0] GT 1) THEN tag = tag+'['+STRTRIM(STRING(j),1)+']'
-		fulltag = 'METADATA'+'.'+tag
-		IF (type EQ 'STRUCT') THEN BEGIN  ; Branches
-			addstruct2tree,metadata,tag,fulltag,parent,metaidhash
-		ENDIF ELSE BEGIN	; Leaves	 
-			addleaf2tree,metadata,tag,fulltag,parent
-		ENDELSE
-	ENDFOR
-ENDFOR
-
-; Add root for Data Tree
+; Create Data Tree starting at root
 IF havedata THEN BEGIN
-   root = WIDGET_TREE(datatree,value='DATA',uvalue='datatree',/folder,/expanded)
-   idhash = HASH('DATA',root)
-   tags = get_tags(data,'data')
-
-   FOR i = 0, N_ELEMENTS(tags)-1 DO BEGIN
-        elements = STRSPLIT(tags[i],'.',/extract,count=count)
-	tagname = elements[-1]
-	parent = 't_'+elements[-2]
-	tag = IDL_VALIDNAME(tagname,/convert_all)
-	IF (count EQ 2) THEN parent='root'
-	result = EXECUTE('type = size('+tags[i]+',/tname)')
-	Result = EXECUTE("t_"+tag +" = WIDGET_TREE("+parent+$
-		",value='"+tagname+"',/folder,uvalue='datatree')")
-	Result = EXECUTE('t_tag = t_'+tag)
-	idhash += HASH(tags[i],t_tag)
-	IF (type NE 'STRUCT') THEN BEGIN  ; Leaves
-	;	result=EXECUTE('tagvalue = '+tags[i])
-	;	tagvalue = STRING(tagvalue[0])
-	;	Result = EXECUTE("t_value = WIDGET_TREE(t_"+tag+$
-	;		",value='"+tagvalue+"',uvalue=tags[i])")
-	ENDIF
-   ENDFOR
+	tag = 'DATA'
+	fulltag = 'DATA'
+	parent = datatree
+  idhash = ORDEREDHASH()
+  addstruct2tree,data,tag,fulltag,parent,idhash,meta=0
 ENDIF
 
 WIDGET_CONTROL, top, /realize              ; create the widgets
 IF havedata THEN BEGIN 
-	WIDGET_CONTROL, draw, get_value=win_id      ;get the graphic window id
+	WIDGET_CONTROL, draw, get_value=win_id   ;get the graphic window id
 ENDIF
 XMANAGER, 'browse', top, no_block=0      ; wait for events
 RETURN, returning

@@ -9,6 +9,7 @@ PRO browse_event,ev  ; Event Handler
   Rdim = SIZE(returning,/n_dim)
   datatreeselect = 0
   CASE uvalue OF
+      'text' :
       'maxcounts' : BEGIN
 	  ;First check that it is a numeric 2+ dim array
           IF (Rtype LE 5) THEN BEGIN
@@ -170,7 +171,8 @@ PRO browse_event,ev  ; Event Handler
          ;Event from Data Tree
          IF (ev.type EQ 1) THEN uvalue = 'openfolder'
          IF (ev.type EQ 0 AND idhash.Where(ev.id) ne '') THEN BEGIN
-            rtn=idhash.Where(ev.id)
+            rtn=idhash.Where(ev.id,count=count)
+	    if count eq 0 then stop
             rtn=rtn[0]
             WIDGET_CONTROL,status.datatextid,set_value=rtn
          ENDIF
@@ -179,10 +181,12 @@ PRO browse_event,ev  ; Event Handler
       'metadatatree': BEGIN
          ;Event from Metadata Tree
          IF (ev.type EQ 0 and metaidhash.Where(ev.id) ne '') THEN BEGIN
+     
             rtn = metaidhash.Where(ev.id)
             ; Just take first of matching key to id, although
             ; there should be just one, but need this anyway
             ; to convert list to string
+	    
             rtn = rtn[0]
             WIDGET_CONTROL,status.metadatatextid,set_value=rtn
             Result = EXECUTE('returning = '+rtn)
@@ -203,8 +207,8 @@ PRO browse_event,ev  ; Event Handler
      type = SIZE(returning,/tname)
      Nreturn = N_ELEMENTS(returning)
   
-     ;IF rtn is string array use xdisplayfile
-     IF (type EQ 'STRING') THEN BEGIN
+     ;IF rtn is string array open window with info xdisplayfile
+     IF (type EQ 'STRING' AND dim[0] gt 1) THEN BEGIN
         ERASE  ;Erase the previous image in the draw widget
         ;Display headers in scrollable text window
         width = 80
