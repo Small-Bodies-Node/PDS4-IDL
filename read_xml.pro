@@ -50,12 +50,14 @@ FUNCTION READ_XML,filename, toScreen=toScreen, outFile=outFile, $
 ;	Removed path variable.  Now filename should contain path if needed ES [Dec 3, 2013]
 ;	Fixed a bug which left off an element that had tried but failed to append to 
 ;	array of elements of the same name. [ES/Nov 17, 2014]
-;	Added  validation flag. [ES/July 8, 2015]
+;	Added  validation flag. But IDL requires schema to be local. [ES/July 8, 2015]
+; Fixed bug where text nodes that are quoted got mauled (ES-7/28/15)
+;
 ;-
 ;-----------------------------------------------------------------
 
   IF (N_PARAMS() LT 1) THEN BEGIN
-	PRINT, 'usage: Result = READ_XML(filename, toScreen=toScreen, outFile=outFile,paramsOut=paramsOut)'
+	PRINT, 'usage: Result = READ_XML(filename [, toScreen=toScreen, outFile=outFile,paramsOut=paramsOut, validation=validation] )'
 	RETURN,0
   ENDIF
  
