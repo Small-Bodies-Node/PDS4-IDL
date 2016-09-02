@@ -48,6 +48,7 @@ IF (nout GT 0) THEN BEGIN
 	PRINT, ' RMELEMENT: Attempting to remove elements outside array size'
 	PRINT, ' array has length ', szarr
 	PRINT, ' outside indx to remove is/are ', indx[outside]
+	stop
 	RETURN,array
 	ENDIF
 ; If removing an array of element	

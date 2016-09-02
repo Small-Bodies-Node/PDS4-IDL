@@ -51,17 +51,17 @@ IF (tabletype NE 'BINARY') THEN BEGIN ; For ASCII tables
          'ASCII_Boolean':                   values += ', 0B '
          'ASCII_Integer':                   values += ', 0L '
          'ASCII_NonNegative_Integer':       values += ', 0L '
-         'ASCII_Numeric_Base2':             values += ', "A" '
-         'ASCII_Numeric_Base8':             values += ", 0L "
-         'ASCII_Numeric_Base16':            values += ", 0L "
+         'ASCII_Numeric_Base2':             values += ", 'A' "
+         'ASCII_Numeric_Base8':             values += ', 0L '
+         'ASCII_Numeric_Base16':            values += ', 0L '
          'ASCII_Real':                      values += ', 0.0D '
-	 'ASCII_Date_DOY':                  values += ', "1999-365" '
-	 'ASCII_Date_YMD':                  values += ', "1999-12-31" '
-	 'ASCII_Date_Time_DOY':             values += ', "1999-365:23:59:59.999" '
-	 'ASCII_Date_Time_YMD':             values += ', "1999-12-31:23:59:59.999" '
-	 'ASCII_Date_Time_DOY_UTC':         values += ', "1999-365:23:59:59.999Z" '
-	 'ASCII_Date_Time_YMD_UTC':         values += ', "1999-12-31:23:59:59.999Z" '
-         ELSE:                              values += ', "A" '
+	 'ASCII_Date_DOY':                  values += ", '1999-365' "
+	 'ASCII_Date_YMD':                  values += ", '1999-12-31' "
+	 'ASCII_Date_Time_DOY':             values += ", '1999-365:23:59:59.999' "
+	 'ASCII_Date_Time_YMD':             values += ", '1999-12-31:23:59:59.999' "
+	 'ASCII_Date_Time_DOY_UTC':         values += ", '1999-365:23:59:59.999Z' "
+	 'ASCII_Date_Time_YMD_UTC':         values += ", '1999-12-31:23:59:59.999Z' "
+         ELSE:                              values += ", 'A' "
       
       ENDCASE
 
@@ -113,7 +113,7 @@ ENDIF ELSE BEGIN ; Now handle binary table input
       'IEEE754LSBSingle':   values += ', 0.0 '
 
       ELSE :  BEGIN
-        values += ', "' + STRJOIN(REPLICATE("a",field_length[i])) + '" '
+        values += ", '" + STRJOIN(REPLICATE("a",field_length[i])) + "' "
         
         END
     ENDCASE   
