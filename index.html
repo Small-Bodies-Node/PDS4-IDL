@@ -14,7 +14,7 @@ this routine, refer to the IDL Online Help Navigator
 or type: <P>
 <PRE>     ? mk_html_help</PRE><P>
 at the IDL command line prompt.<P>
-<STRONG>Last modified: </STRONG>Tue Jul  7 16:05:29 2015.<P>
+<STRONG>Last modified: </STRONG>Wed Jul 29 12:59:53 2015.<P>
  
 <HR>
  
@@ -88,10 +88,13 @@ at the IDL command line prompt.<P>
          http://www.astro.umd.edu/~eshaya/PDS/pds4readxml.tar
 
 
- IDL VERSIONS TESTED: 8.2
+ IDL VERSIONS TESTED: 8.4
 
  MODIFICATION HISTORY:
  Written by Ed Shaya / U. of Maryland[Sept. 25, 2012]. 
+   Major rewrite: increased speed, reduced lines of code, most data text
+   nodes do not need to open a new window, arrays of length 1 now
+   show up.  addleaf2tree.pro no longer needed. (ES-7/29/15)
 </PRE><P>
 <STRONG>(See <A href="PDS/browse/browse_pds.pro">PDS/browse/browse_pds.pro</A>)</STRONG><P>
 <HR>
@@ -176,6 +179,7 @@ at the IDL command line prompt.<P>
 	Added ASCII_DATE DOY, YMD, and UTC types (March 26, 2015, EJS).
 	Change ASCII_Numeric_Base2 to be read into strings and ASCII_Numeric_Base8 
 	  and _Base16 to be read into Longs.  (March 28, 2015, EJS).
+ 	Fixed bug in reading ASCII array within a Binary Table (ES/July 9, 2015)
 
 </PRE><P>
 <STRONG>(See <A href="PDS/create_tablestruc.pro">PDS/create_tablestruc.pro</A>)</STRONG><P>
@@ -895,8 +899,11 @@ PACKAGE LOCATION:
 
 	outFile - If set to a filename, will save paramArr or tags to that file
 
-	paramsOut - If set to 1, Result is paramArr instead of structure
+	paramsOut - If set to 1, Result is paramArr instead of structure.
 	
+	validation - If set to 1, schema_checking or DTD validation occurs.
+                    Schema or DTD need to be on local disk
+
  PROCEDURES USED:
 	PARSE_PARAMETER, PDSPAR, XML2IDL, GET_TAGS
 
@@ -908,7 +915,10 @@ PACKAGE LOCATION:
 	Modified to allow for single and double quotes within a text node.Ed Shaya [May 29, 2012]
 	Removed path variable.  Now filename should contain path if needed ES [Dec 3, 2013]
 	Fixed a bug which left off an element that had tried but failed to append to 
-	array of elements of the same name.  ES [Nov 17, 2014]
+	array of elements of the same name. [ES/Nov 17, 2014]
+	Added  validation flag. But IDL requires schema to be local. [ES/July 8, 2015]
+ Fixed bug where text nodes that are quoted got mauled (ES-7/28/15)
+
 </PRE><P>
 <STRONG>(See <A href="PDS/read_xml.pro">PDS/read_xml.pro</A>)</STRONG><P>
 <HR>
@@ -960,6 +970,7 @@ PACKAGE LOCATION:
 	outFile - If set to a filename, will save pretty printout to that file
 
 	validation - Turns on validation of xml file
+			The Schema or DTD need to on local disk.
 	
  PROCEDURES USED:
 	XML2IDL8
@@ -1188,6 +1199,10 @@ PACKAGE LOCATION:
  MODIFICATION HISTORY:
 	Written by Ed Shaya / U. of Maryland [April 27, 2012]
 	Modified by Ed Shaya [May 4, 2012] - 
+ Changed the ANDs to &&s to speed it up and to fix a bug when using
+   IDL version 6 where index cannot be -1. (ES-7/5/15)
+ Fixed bug where text nodes that are quoted got mauled (ES-7/28/15)
+
 </PRE><P>
 <STRONG>(See <A href="PDS/xml2idl.pro">PDS/xml2idl.pro</A>)</STRONG><P>
 <HR>

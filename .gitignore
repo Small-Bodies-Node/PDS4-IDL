@@ -4,3 +4,6 @@ makehtml/
 out.html
 inpro
 *.swp
+prettyxml
+outtxt
+.project

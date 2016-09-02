@@ -345,6 +345,7 @@ FUNCTION READ_PDS,file,datastatus=datastatus,metadata=metadata, $
          IF (axis_index_order EQ 'LAST INDEX FASTEST') THEN $
               axis_name = REVERSE(axis_name)
          description = getTagsByName(meta,'.description._text$',/getvalues)
+	
          
 	 IF (description EQ '-1') THEN description = 'Unknown' ELSE description = description[0]
          REPEAT BEGIN
@@ -442,6 +443,7 @@ FUNCTION READ_PDS,file,datastatus=datastatus,metadata=metadata, $
 		  'TABLE': BEGIN    
 	 tabletype = dataset_split[1]
 	 Ntables++
+	 tablen = 'table' + STRTRIM(STRING(Ntables),1)
 
 	 ; If there is a local_identifier use that for tablename.
 	 ; But, make idl_valid if needed.
@@ -452,7 +454,6 @@ FUNCTION READ_PDS,file,datastatus=datastatus,metadata=metadata, $
 	     table_name = tablen  
 
 	 table = pds_read_table(unit,meta,cursor,Ntables,tabletype,nonans)
-	 tablen = 'table' + STRTRIM(STRING(Ntables),1)
 	 Result = EXECUTE(table_name + " = table")
 	 execString += ', '+ table_name + ' : ' + table_name
 		  END ; 'TABLE'
