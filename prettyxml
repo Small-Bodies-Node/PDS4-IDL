@@ -1,0 +1,28 @@
+PRO prettyXML_recurse, oNode, indent
+ 
+   ; print node and its name and value 
+   PRINT, indent GT 0 ? STRJOIN(REPLICATE(' ', indent)) : '', $ 
+      oNode->GetNodeName(), ':', oNode->GetNodeValue() 
+      nodemap = oNode->GetAttributes()
+      natts = nodemap->GetLength()
+      for i = 0, natts -1 do begin
+	      att = nodemap->Item(i)
+
+   PRINT, indent GT 0 ? STRJOIN(REPLICATE(' ', indent)) : '', $ 
+      att->GetNodeName(), ':', att->GetNodeValue() 
+stop
+ 
+   ; Visit children 
+   oSibling = oNode->GetFirstChild() 
+   WHILE OBJ_VALID(oSibling) DO BEGIN 
+      prettyXML_recurse, oSibling, indent+3 
+      oSibling = oSibling->GetNextSibling() 
+   ENDWHILE 
+END 
+ 
+PRO prettyXML, filename 
+   oDoc = OBJ_NEW('IDLffXMLDOMDocument') 
+   oDoc->Load, FILENAME= filename
+   prettyXML_RECURSE, oDoc, 0 
+   OBJ_DESTROY, oDoc 
+END
