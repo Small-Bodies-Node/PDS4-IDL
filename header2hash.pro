@@ -74,7 +74,7 @@ FOR i = 0, endcard DO BEGIN
 		IF key EQ 'COMMENT' THEN comments =  [comments,STRTRIM(STRMID(hdri,pos+1),2)]
 		IF key EQ 'HISTORY' THEN history =  [history,STRTRIM(STRMID(hdri,pos+1),2)]
 	ENDIF ELSE BEGIN
-		keys.Add,STRTRIM(STRMID(hdri,0,pos-1),2)
+		keys.Add,STRTRIM(STRMID(hdri,0,pos),2)
 		value = STRMID(hdri,pos[0]+1)
 		posquote1 = STRPOS(value,"'")
 		IF (posquote1 NE -1) THEN  BEGIN
@@ -91,11 +91,10 @@ FOR i = 0, endcard DO BEGIN
 			cmmnts.Add, STRTRIM(STRMID(value,pos+1))
 		        value = STRTRIM(STRMID(value,0,pos-1),2)
 		ENDIF ELSE cmmnts.Add, ''
-		print,value
 		; This execute will allow each value to 
 		; be datatyped real or integer, if it 
 		; fails then it will remain string
-		result = EXECUTE("value = "+value)
+		if value ne '' then result = EXECUTE("value = "+value)
 		values.Add,value
 	ENDELSE
 ENDFOR

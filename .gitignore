@@ -1,6 +1,13 @@
 makehtml/
 *~
 *.sh
-out.html
 inpro
+prettysml
+outtxt
+*.[oa]
+*.ps
+*.gz
+*.pdf
 *.swp
+.project
+out.html
