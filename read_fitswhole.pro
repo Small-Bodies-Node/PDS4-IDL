@@ -18,7 +18,6 @@ ELSE $
 ; If it only has extend=1, then we read in a maximum of 100 extensions here.
 nextend = fxpar(hdr_0,'NEXTEND',count=matches)
 if keyword_set(nextensions) then nextend = nextensions
-if nextend eq 2 then nextend = 0
 IF (nextend EQ 0) THEN BEGIN
 	extend = fxpar(hdr_0,'EXTEND')
 	IF (extend EQ 1) THEN nextend = 100
