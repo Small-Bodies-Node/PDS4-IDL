@@ -77,7 +77,7 @@ FUNCTION READ_PDS,file,datastatus=datastatus,metadata=metadata, $
 
   ;Begin the error handler:
   error_status = 0
-  ;CATCH, Error_status
+  CATCH, Error_status
   IF Error_status NE 0 THEN BEGIN
     PRINT, 'Error index: ', Error_status 
     PRINT, 'Error message: ', !ERROR_STATE.MSG 
@@ -446,16 +446,12 @@ FUNCTION READ_PDS,file,datastatus=datastatus,metadata=metadata, $
 	 tablen = 'table' + STRTRIM(STRING(Ntables),1)
 
 	 ; If there is a local_identifier use that for tablename.
-	 ; But, make idl_valid if needed.
-	 IF TOTAL(STRMATCH(TAG_NAMES(meta),'LOCAL_IDENTIFIER') EQ 1) THEN BEGIN
-	   table_name = IDL_VALIDNAME(meta.local_identifier._text, $
-	                               /convert_all, /convert_spaces) 
-         ENDIF ELSE BEGIN
-	 	IF TOTAL(STRMATCH(TAG_NAMES(meta),'NAME') EQ 1) THEN BEGIN
-	   	table_name = IDL_VALIDNAME(meta.name._text, $
-	                               /convert_all, /convert_spaces) 
-	 	ENDIF ELSE table_name = tablen  
-	 ENDELSE
+	 table_name = getTagsByName(meta,'^.local_identifier._text', /getvalues)
+	 IF (table_name[0] EQ "-1") THEN $  
+	 table_name = getTagsByName(meta,'^.name._text', /getvalues)
+	 ; Use name if no local_identifier and Make name idl valid, if needed.
+	 IF (table_name[0] EQ "-1") THEN table_name = tablen ELSE $
+	    table_name = IDL_VALIDNAME(table_name[0],/convert_all,/convert_spaces) 
 
 	 table = pds_read_table(unit,meta,cursor,Ntables,tabletype,nonans)
 	 Result = EXECUTE(table_name + " = table")
