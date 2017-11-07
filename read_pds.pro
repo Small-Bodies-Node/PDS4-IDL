@@ -112,8 +112,8 @@ FUNCTION READ_PDS,file,datastatus=datastatus,metadata=metadata, $
      PRINT, 'read_pds: Returning'
      RETURN, -1
   ENDIF
-  filename = file_basename(file)
-  path = file_dirname(file)
+  filename = FILE_BASENAME(file)
+  path = FILE_DIRNAME(file)
   
   IF ~KEYWORD_SET(no_reorient) THEN no_reorient = 0
 
@@ -214,9 +214,9 @@ FUNCTION READ_PDS,file,datastatus=datastatus,metadata=metadata, $
 	     hdr = ["NAME = Unknown","COMMENT = Unable to read header"]
 ;	     CASE parsing_standard_id of
 ;	        '7-Bit ASCII Text': BEGIN
-;	           bytehdr = bytearr(object_length)
-;	           readu,unit,bytehdr
-;	           hdr = strsplit(string(bytehdr),string(13b))
+;	           bytehdr = BYTEARR(object_length)
+;	           READU,unit,bytehdr
+;	           hdr = STRSPLIT(STRING(bytehdr),STRING(13b))
 ;  	     END
 ;			               
 ;	    'CDF 3.4 ISTP/IACG':
@@ -229,9 +229,9 @@ FUNCTION READ_PDS,file,datastatus=datastatus,metadata=metadata, $
 ;	        'Pre-PDS3':
 
 ;	      'UTF-8 Text':  BEGIN
-;                  bytehdr = bytearr(object_length)
-;                  readu,unit,bytehdr
-;                  hdr = strsplit(string(bytehdr),string(13b))
+;                  bytehdr = BYTEARR(object_length)
+;                  READU,unit,bytehdr
+;                  hdr = STRSPLIT(STRING(bytehdr),STRING(13b))
 ;               END
 ;                   
 ;  	      'VICAR1':
@@ -253,7 +253,7 @@ FUNCTION READ_PDS,file,datastatus=datastatus,metadata=metadata, $
                 cursor += object_length
                 ; print,' cursor set to', cursor
                 hdr = STRING(REFORM(bytehdr,80,object_length/80))
-                lastcard = where(strmid(hdr,0,3) EQ 'END',count)
+                lastcard = WHERE(STRMID(hdr,0,3) EQ 'END',count)
                 IF (count NE 0) THEN hdr = hdr[0:lastcard[0]-1] $
                      ELSE $
                         PRINT,'read_pds: Warning: No END statement in FITS header'
@@ -310,15 +310,15 @@ FUNCTION READ_PDS,file,datastatus=datastatus,metadata=metadata, $
             RETURN, 0
          ENDIF
          
-	 axis_index_order = STRUPCASE(strtrim(meta.axis_index_order._text,2))
+	 axis_index_order = STRUPCASE(STRTRIM(meta.axis_index_order._text,2))
 	 special_tags = $
 		getTagsByName(meta,'^\.Special_Constants.*_text',count=nspecials)
 	 IF (nspecials GT 0) THEN BEGIN
 	      tagvString = ""
 	      FOR kk = 0, nspecials-1 DO BEGIN
 	          Result = Execute("value = meta" + special_tags[kk]) 
-	          tag = strmid(special_tags[kk],19)
-	          tag = strmid(tag,0,strlen(tag)-6)
+	          tag = STRMID(special_tags[kk],19)
+	          tag = STRMID(tag,0,STRLEN(tag)-6)
 	          tagvString = tagvString + "," + tag + " : " + value 
 	      ENDFOR   
    
@@ -349,8 +349,8 @@ FUNCTION READ_PDS,file,datastatus=datastatus,metadata=metadata, $
          
 	 IF (description EQ '-1') THEN description = 'Unknown' ELSE description = description[0]
          REPEAT BEGIN
-             quotes = strpos(description,'"')
-             IF quotes NE -1 THEN strput,description,"'",quotes
+             quotes = STRPOS(description,'"')
+             IF quotes NE -1 THEN STRPUT,description,"'",quotes
          ENDREP UNTIL quotes EQ -1
 	 display_info = getTagsByName(meta,'^\.Display_2D_Image$',/getvalues,count=ndisplay)
 	 IF (ndisplay GT 0) THEN BEGIN
@@ -373,7 +373,7 @@ FUNCTION READ_PDS,file,datastatus=datastatus,metadata=metadata, $
                       status=status
 
          ; Re-orient image, unless no_reorient is  set 
-         IF (no_reorient eq 0 and nnumber gt 1) THEN BEGIN
+         IF (no_reorient EQ 0 AND nnumber GT 1) THEN BEGIN
             PRINT,'read_pds: Re-orienting the image'
             IF (line_display_direction EQ 'UP' OR $
 		  line_display_direction EQ 'DOWN') THEN BEGIN
@@ -427,7 +427,7 @@ FUNCTION READ_PDS,file,datastatus=datastatus,metadata=metadata, $
          ENDIF
          NImages++  ; incriment the image number and create a structure for array
          imagen = 'Array' + STRTRIM(STRING(NImages),1)
-         IF (array_name EQ 'Unknown') then array_name = imagen
+         IF (array_name EQ 'Unknown') THEN array_name = imagen
          Result = EXECUTE(array_name + " = { array_type : dataseti, " + $
                  "description: description[0], units : units[0], " + $
                  "axis_names : axis_name, axis_units : axis_units, " + $
