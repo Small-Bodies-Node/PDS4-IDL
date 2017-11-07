@@ -76,7 +76,8 @@ FUNCTION READ_PDS,file,datastatus=datastatus,metadata=metadata, $
   COMMON openercom, fstate
 
   ;Begin the error handler:
-  CATCH, Error_status
+  error_status = 0
+  ;CATCH, Error_status
   IF Error_status NE 0 THEN BEGIN
     PRINT, 'Error index: ', Error_status 
     PRINT, 'Error message: ', !ERROR_STATE.MSG 
@@ -442,17 +443,21 @@ FUNCTION READ_PDS,file,datastatus=datastatus,metadata=metadata, $
 		  'TABLE': BEGIN    
 	 tabletype = dataset_split[1]
 	 Ntables++
+	 tablen = 'table' + STRTRIM(STRING(Ntables),1)
 
 	 ; If there is a local_identifier use that for tablename.
 	 ; But, make idl_valid if needed.
-	 IF TOTAL(STRMATCH(TAG_NAMES(meta),'LOCAL_IDENTIFIER') EQ 1) THEN $
+	 IF TOTAL(STRMATCH(TAG_NAMES(meta),'LOCAL_IDENTIFIER') EQ 1) THEN BEGIN
 	   table_name = IDL_VALIDNAME(meta.local_identifier._text, $
-	                               /convert_all, /convert_spaces) $
-	 ELSE $
-	     table_name = tablen  
+	                               /convert_all, /convert_spaces) 
+         ENDIF ELSE BEGIN
+	 	IF TOTAL(STRMATCH(TAG_NAMES(meta),'NAME') EQ 1) THEN BEGIN
+	   	table_name = IDL_VALIDNAME(meta.name._text, $
+	                               /convert_all, /convert_spaces) 
+	 	ENDIF ELSE table_name = tablen  
+	 ENDELSE
 
 	 table = pds_read_table(unit,meta,cursor,Ntables,tabletype,nonans)
-	 tablen = 'table' + STRTRIM(STRING(Ntables),1)
 	 Result = EXECUTE(table_name + " = table")
 	 execString += ', '+ table_name + ' : ' + table_name
 		  END ; 'TABLE'
