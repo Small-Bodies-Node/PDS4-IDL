@@ -9,11 +9,7 @@ OPENR, lunit, datafile, /get_lun, error = error,/swap_if_little,compress=compres
 
 ; Read primary header/data
 primary = mrdfits(lunit,0,hdr_0,/dscale,status=status,silent=2)
-<<<<<<< HEAD
 IF (N_ELEMENTS(primary) EQ 1) THEN $
-=======
-IF (N_ELEMENTS(primary EQ 1)) THEN $
->>>>>>> 83a289cf8732b60848bbc032838a77c496098c77
 	execString +=  ', header : hdr_0 ' $
 ELSE $
 	execString +=  ', header : hdr_0, data : primary '
@@ -22,10 +18,6 @@ ELSE $
 ; If it only has extend=1, then we read in a maximum of 100 extensions here.
 nextend = fxpar(hdr_0,'NEXTEND',count=matches)
 if keyword_set(nextensions) then nextend = nextensions
-<<<<<<< HEAD
-=======
-if nextend eq 2 then nextend = 0
->>>>>>> 83a289cf8732b60848bbc032838a77c496098c77
 IF (nextend EQ 0) THEN BEGIN
 	extend = fxpar(hdr_0,'EXTEND')
 	IF (extend EQ 1) THEN nextend = 100
