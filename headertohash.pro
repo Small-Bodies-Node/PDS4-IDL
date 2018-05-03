@@ -9,7 +9,11 @@
 ;       Datafile handling; FITS, PDS
 ;
 ; CALLING SEQUENCE:
+<<<<<<< HEAD
 ;       hhash = headertohash(header,comments=comments)
+=======
+;       hhash = headertohash(header,comments=comments
+>>>>>>> 83a289cf8732b60848bbc032838a77c496098c77
 ;
 ; INPUTS:
 ; header - A string array holding the information from a fits header (or something resembling it)

@@ -347,6 +347,7 @@ FUNCTION READ_PDS,file,datastatus=datastatus,metadata=metadata, $
          IF (axis_index_order EQ 'LAST INDEX FASTEST') THEN $
               axis_name = REVERSE(axis_name)
          description = getTagsByName(meta,'.description._text$',/getvalues)
+	
          
 	 IF (description EQ '-1') THEN description = 'Unknown' ELSE description = description[0]
          REPEAT BEGIN
