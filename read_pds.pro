@@ -102,8 +102,8 @@ FUNCTION READ_PDS,file,datastatus=datastatus,metadata=metadata, $
   IF KEYWORD_SET(version) THEN RETURN, 0
   IF KEYWORD_SET(help) THEN BEGIN
            PRINT, 'read_pds: Usage'
-           PRINT, '   data = read_pds(XMLfile, datastatus=datastatus, metadata=metadata
-           PRINT, '                      noNANs=noNANs, version=version)
+           PRINT, '   data = read_pds(XMLfile, datastatus=datastatus, metadata=metadata'
+           PRINT, '                      noNANs=noNANs, version=version)'
            RETURN, -1
   ENDIF
   filetest = file_search(file)
@@ -124,7 +124,7 @@ FUNCTION READ_PDS,file,datastatus=datastatus,metadata=metadata, $
   ; Get File_Area of metadata
   filearea = getTagsByName(metadata,'FILE_AREA_OBSERVATIONAL$',/getvalues,count=count)
   IF (count EQ 0) THEN BEGIN
-    PRINT,'read_pds: No element FILE_AREA_OBSERVATIONAL.  Returning -2
+    PRINT,'read_pds: No element FILE_AREA_OBSERVATIONAL.  Returning -2'
     RETURN, -2
   ENDIF
   ; Get title text to use as name of output
@@ -154,12 +154,13 @@ FUNCTION READ_PDS,file,datastatus=datastatus,metadata=metadata, $
 		     ; datafile name
 		     datafile = meta.file_name._text
 		     creation_datetime = getTagsByName(meta,'^.creation_date_time._text',/getvalues)
+		     stop
 		     IF (creation_datetime[0] EQ '-1') THEN $
 			     creation_datetime = 'Unknown'
 		     compress = ''
 		     suffix = STRMID(datafile,STRPOS(datafile,'.',/reverse_search)+1)
                      IF (suffix EQ 'gz') THEN compress = 'gunzip'
-                     IF (suffix eq 'z' or suffix eq 'Z') THEN $
+                     IF (suffix EQ 'z' OR suffix EQ 'Z') THEN $
 			     compress = 'uncompress'
                      IF (suffix EQ 'bz2') THEN compress = 'bunzip2'
                      fullDatafile = path+'/'+datafile[0]
@@ -188,15 +189,15 @@ FUNCTION READ_PDS,file,datastatus=datastatus,metadata=metadata, $
              PRINT, 'pds_rd: offset unit should be "byte", but it is "'+offset_unit+'" in the .xml file.'
              RETURN, 0
          ENDIF    
-         ;point_lun,-unit,cc
-         ;print,' point_lun before skip ',cc, cursor
+         ;POINT_LUN,-unit,cc
+         ;PRINT,' point_lun before skip ',cc, cursor
          mrd_skip, unit, offset-cursor
          cursor = offset
          name = getTagsByName(meta,'^\.local_identifier._text',/getvalues)
          name = name[0]
          IF (name EQ '-1') THEN name = 'Unknown'
          name = IDL_VALIDNAME(name,/convert_all)
-         ; description of header
+         ; Description of header
          description = getTagsByName(meta,'^\.description._text',/getvalues)
          description = description[0]
          IF (description EQ '-1') THEN description = 'Unknown'  
@@ -237,21 +238,21 @@ FUNCTION READ_PDS,file,datastatus=datastatus,metadata=metadata, $
 ;  	      'VICAR1':
 ;  	      'VICAR2':
 ;        ELSE: BEGIN
-;        print, 'read_pds: parsing_standard_id of header,',$
+;        PRINT, 'read_pds: parsing_standard_id of header,',$
 ;                parsing_standard_id,' is unknown'
-;        print, 'Returning'
-;        return,-1
+;        PRINT, 'Returning'
+;        RETURN,-1
 ;      END
 ;   ENDCASE
              IF (parsing_standard_id EQ 'FITS 3.0') THEN BEGIN
                 bytehdr = BYTARR(object_length)
                 ; point_lun,-unit,cc
-                ;print,' cursor before readu',cc
+                ;PRINT,' cursor before readu',cc
                 READU,unit,bytehdr
-                ; point_lun,-unit,cc
-                ;  print,' cursor after readu',cc
+                ; POINT_LUN,-unit,cc
+                ;  PRINT,' cursor after readu',cc
                 cursor += object_length
-                ; print,' cursor set to', cursor
+                ; PRINT,' cursor set to', cursor
                 hdr = STRING(REFORM(bytehdr,80,object_length/80))
                 lastcard = WHERE(STRMID(hdr,0,3) EQ 'END',count)
                 IF (count NE 0) THEN hdr = hdr[0:lastcard[0]-1] $
@@ -295,11 +296,11 @@ FUNCTION READ_PDS,file,datastatus=datastatus,metadata=metadata, $
          
          ; Bring file cursor up to offset
          IF (offset-cursor GT 0) THEN  BEGIN
-            ;point_lun,-unit,cc
-            ;print,' Before skip to Bring file cursor up ',cc
+            ;POINT_LUN,-unit,cc
+            ;PRINT,' Before skip to Bring file cursor up ',cc
             mrd_skip, unit,offset - cursor
-            ;point_lun,-unit,cc
-            ;print,' Before skip to Bring file cursor up ',cc,' should be ', offset
+            ;POINT_LUN,-unit,cc
+            ;PRINT,' Before skip to Bring file cursor up ',cc,' should be ', offset
             cursor = offset
          ENDIF    
          
@@ -419,7 +420,7 @@ FUNCTION READ_PDS,file,datastatus=datastatus,metadata=metadata, $
                 SWAP_ENDIAN_INPLACE, array0, /SWAP_IF_LITTLE_ENDIAN
                 
          ; Scale the data if needed       
-         IF (scaling eq 1) THEN BEGIN
+         IF (scaling EQ 1) THEN BEGIN
             IF KEYWORD_SET(dscale) THEN $
                 array0 = TEMPORARY(array0)*scaling_factor[0]+value_offset[0] $
             ELSE $

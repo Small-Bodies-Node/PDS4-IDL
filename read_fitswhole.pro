@@ -9,7 +9,7 @@ OPENR, lunit, datafile, /get_lun, error = error,/swap_if_little,compress=compres
 
 ; Read primary header/data
 primary = mrdfits(lunit,0,hdr_0,/dscale,status=status,silent=2)
-IF (N_ELEMENTS(primary EQ 1)) THEN $
+IF (N_ELEMENTS(primary) EQ 1) THEN $
 	execString +=  ', header : hdr_0 ' $
 ELSE $
 	execString +=  ', header : hdr_0, data : primary '
