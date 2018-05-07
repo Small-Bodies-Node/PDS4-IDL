@@ -65,8 +65,8 @@ IF (endcard EQ -1) THEN BEGIN
 ENDIF
 FOR i = 0, endcard DO BEGIN
 	hdri = hdr[i]
-	pos = STRPOS(hdri,'=')
-	IF (pos EQ -1) THEN BEGIN
+	pos_eq = STRPOS(hdri,'=')
+	IF (pos_eq EQ -1) THEN BEGIN
 		; No equal sign, may be comment or history
 	        pos = STRPOS(hdri,' ')
 		IF (pos EQ -1 OR pos EQ 1) THEN CONTINUE
@@ -74,11 +74,21 @@ FOR i = 0, endcard DO BEGIN
 		IF key EQ 'COMMENT' THEN comments =  [comments,STRTRIM(STRMID(hdri,pos+1),2)]
 		IF key EQ 'HISTORY' THEN history =  [history,STRTRIM(STRMID(hdri,pos+1),2)]
 	ENDIF ELSE BEGIN
-		keys.Add,STRTRIM(STRMID(hdri,0,pos),2)
-		value = STRMID(hdri,pos[0]+1)
+		; Normally thereis an equal sign
+		key = STRTRIM(STRMID(hdri,0,pos_eq),2)
+		if key eq 'DCLOG1' then stop
+		keys.Add,key
+		value = STRMID(hdri,pos_eq[0]+1)
 		posquote1 = STRPOS(value,"'")
-		IF (posquote1 NE -1) THEN  BEGIN
+		IF (posquote1 NE -1 AND posquote1 EQ 1) THEN  BEGIN
 			posquote2 = STRPOS(STRMID(value,posquote1+1),"'")
+			;  Allow for 1 apostrohe in value
+			posquote3 = STRPOS(STRMID(value,posquote2+posquote1+2),"'")
+			if posquote3 EQ 0 then begin
+				posquote4 = STRPOS(STRMID(value,posquote2+2),"'")
+				posquote2 = posquote4+posquote2+posquote1+3
+			endif
+
 			IF  (posquote2 EQ -1) THEN BEGIN
 				PRINT, 'header2hash: unmatched quote, line ',i
 				STOP
@@ -86,10 +96,14 @@ FOR i = 0, endcard DO BEGIN
 				pos = STRPOS(STRMID(value,posquote1+posquote2+2),'/')
 				IF (pos NE -1) THEN pos = pos+posquote1+posquote2+2
 			ENDELSE
-		ENDIF ELSE pos = STRPOS(value,'/')
-		IF (pos NE -1) THEN BEGIN
-			cmmnts.Add, STRTRIM(STRMID(value,pos+1))
-		        value = STRTRIM(STRMID(value,0,pos-1),2)
+			pos_slash = STRPOS(STRMID(value,posquote2+1),'/')
+			IF (pos_slash NE -1) then $
+				pos_slash = pos_slash + posquote2 + 1
+		ENDIF ELSE pos_slash = STRPOS(value,'/')
+		IF (pos_slash NE -1) THEN BEGIN
+			cmm = STRTRIM(STRMID(value,pos_slash+1))
+			cmmnts.Add, cmm
+		        value = STRTRIM(STRMID(value,0,pos_slash-1),2)
 		ENDIF ELSE cmmnts.Add, ''
 		; This execute will allow each value to 
 		; be datatyped real or integer, if it 
