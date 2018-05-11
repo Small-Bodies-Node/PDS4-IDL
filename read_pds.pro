@@ -154,7 +154,6 @@ FUNCTION READ_PDS,file,datastatus=datastatus,metadata=metadata, $
 		     ; datafile name
 		     datafile = meta.file_name._text
 		     creation_datetime = getTagsByName(meta,'^.creation_date_time._text',/getvalues)
-		     stop
 		     IF (creation_datetime[0] EQ '-1') THEN $
 			     creation_datetime = 'Unknown'
 		     compress = ''
@@ -465,7 +464,7 @@ FUNCTION READ_PDS,file,datastatus=datastatus,metadata=metadata, $
 	    
 		  ELSE: BEGIN
 		      PRINT,' This format is unknown ', dataseti
-		      Stop
+		      STOP
 		   ; Bundle
 		   ; Bundle_Member_Entry
 		   ; Encoded_Image

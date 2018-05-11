@@ -76,7 +76,7 @@ FOR i = 0, endcard DO BEGIN
 	ENDIF ELSE BEGIN
 		; Normally thereis an equal sign
 		key = STRTRIM(STRMID(hdri,0,pos_eq),2)
-		if key eq 'DCLOG1' then stop
+		;if key eq 'DCLOG1' then stop
 		keys.Add,key
 		value = STRMID(hdri,pos_eq[0]+1)
 		posquote1 = STRPOS(value,"'")
