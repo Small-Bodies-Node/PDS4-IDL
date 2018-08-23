@@ -56,5 +56,3 @@ IF (ncomments GT 0) THEN hh = hh +HASH('COMMENT',commentarr)
 IF (nhistory GT 0) THEN  hh = hh +HASH('HISTORY',historyarr)
 RETURN,hh
 END
-
-

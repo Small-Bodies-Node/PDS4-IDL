@@ -40,20 +40,37 @@
 	
   ; Fields is total number of columns, but some may be arrays
   fields = LONG(recordMeta.fields._text)
+  groups = LONG(recordMeta.groups._text)
 
   ; Presumably every field has a name, so use that to get Nfields
   names = getTagsByName(recordMeta, $
 	'\.FIELD'+suffix+ending+'.NAME._TEXT',/getValues)
   Nfields = N_ELEMENTS(names)
+  IF (nfields NE fields+groups) THEN BEGIN
+	  PRINT, 'pds_read_table: fields + groups not equal to number of named fields'
+	  PRINT,' fields = ',fields,' groups = ',groups, ', but nfields = ', nfields
+	  FOR i=0, nfields-1 do print, i+1,' ', names[i]
+	  RETURN,0
+  ENDIF
 	
   IF (tabletype NE 'DELIMITED') THEN BEGIN
-     ; We can order by either field_locations or group_location at the top level
+     ; field_locations or group_location at the top level
      locations = LONG64(getTagsByName(recordMeta, $
-         '^\.(GROUP_)?FIELD'+suffix+ending $
+       '^\.(GROUP_)?FIELD'+suffix+ending $
          + '\.((GROUP)|(FIELD))_LOCATION._TEXT',/getValues))
-     arraynum = SORT(locations) 
-     names = names[arraynum]
-     locations = locations[arraynum]
+     ;The following 3 lines of code only work if there is one and only one field
+     ; in a group.  Then the group location is the field location
+     IF (N_ELEMENTS(locations) NE nfields) then begin
+	     PRINT, 'pds_read_table: Number of top level fields not equal to total fields'
+	     PRINT, 'This probably means that there are groups with more than one field'
+	     PRINT, 'Read_pds does not handle embedded tables, just embedded arrays'
+	     PRINT, 'You can continue by ".c", at your own risk.'
+	     STOP
+     ENDIF
+     iloc = SORT(locations) 
+     names = names[iloc]
+     locations = locations[iloc]
+
   ENDIF
 	
   ; Gettagsbyname does not necessarily get order correct, so we will
@@ -192,7 +209,7 @@
      "BINARY": BEGIN
 	     READU, unit, recordarr, transfer_count=rows_read
 	     ;PRINT,' Rows Read ', rows_read
-	    ; PRINT,' Rows Expected ', records
+	     ;PRINT,' Rows Expected ', records
 	     cursor = cursor + records*record_length
 	     ;print,cursor
 	     ;point_lun,-unit,cc

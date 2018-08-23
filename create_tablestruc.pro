@@ -19,7 +19,7 @@ FUNCTION CREATE_TABLESTRUC, tags, datatype, repetitions, field_length, tabletype
 ;	datatype - PDS standard names for field datatypes.
 ;	repetitions - (Nfields,3) dimensioned integer array.  For each field,there is an 
 ;             (N,M,L) to provide the dimension of array.  If field is just an 
-;             array then it will be (N,0,0). (N,M,0) for 2-d array. (N,M,L) for 3-d array
+;             N element array, then it is (N,0,0). (N,M,0) for 2-d array. (N,M,L) for 3-d array
 ;	field_length - Length of each cell in the field.
 ;	tabletype -  This just needs to be set to "BINARY", if table is binary type
 ;
@@ -125,7 +125,7 @@ ENDIF ELSE BEGIN ; Now handle binary table input
         reps = '('+ STRTRIM(STRING(repet[0]),1)+') '
 
 
-
+      ; Make use of the IDL INTARR() and similar functions to create template for structure.
       CASE datatype[i] OF
 
 	'ASCII_String':			values += ', ASCIIARR_'
@@ -165,7 +165,7 @@ ENDIF ELSE BEGIN ; Now handle binary table input
        END
       ENDCASE
 
-      ; For ASCII need to form array with correct length strings
+      ; For ASCII, need to form array with correct length for strings
       IF STRMID(datatype[i],0,5) EQ 'ASCII' THEN BEGIN
 	        ; This makes a string of length = field_length
         	asciiv = STRJOIN(REPLICATE("a",field_length[i])) 
@@ -174,7 +174,8 @@ ENDIF ELSE BEGIN ; Now handle binary table input
 		result = EXECUTE('asciiarr_' + si + ' = STRARR'+reps)
 		; This does a[*] = asciiv
 		result = EXECUTE('asciiarr_' + si +'[*] = asciiv')
-		; Add _N to make values unique.
+		; Add "i" to ASCIIARR_  to make values unique and tie to what was 
+		; just executed.
 		values += si+' '
 	ENDIF
 
