@@ -37,7 +37,9 @@ FUNCTION CREATE_TABLESTRUC, tags, datatype, repetitions, field_length, tabletype
 ;	Added ASCII_DATE DOY, YMD, and UTC types (March 26, 2015, EJS).
 ;	Change ASCII_Numeric_Base2 to be read into strings and ASCII_Numeric_Base8 
 ;	  and _Base16 to be read into Longs.  (March 28, 2015, EJS).
-; 	Fixed bug in reading ASCII array within a Binary Table (ES/July 9, 2015)
+;	Fixed bug in reading ASCII array within a Binary Table (ES/July 9, 2015).
+;	Change ASCII_Integer and ASCII_NonNegative_Integer to be read as
+;	  64-bit signed long and 64-bit unsigned long respectively (LN/May 18,2025).
 ;
 ;-
 ;-----------------------------------------------------------------
@@ -49,8 +51,8 @@ IF (tabletype NE 'BINARY') THEN BEGIN ; For ASCII tables
     IF (TOTAL(repet[0:2] EQ [1,0,0]) EQ 3) THEN BEGIN
       CASE datatype[i] OF
          'ASCII_Boolean':                   values += ', 0B '
-         'ASCII_Integer':                   values += ', 0L '
-         'ASCII_NonNegative_Integer':       values += ', 0L '
+         'ASCII_Integer':                   values += ', 0LL '
+         'ASCII_NonNegative_Integer':       values += ', 0ULL '
          'ASCII_Numeric_Base2':             values += ", 'A' "
          'ASCII_Numeric_Base8':             values += ', 0L '
          'ASCII_Numeric_Base16':            values += ', 0L '
@@ -73,8 +75,8 @@ IF (tabletype NE 'BINARY') THEN BEGIN ; For ASCII tables
 
       CASE datatype[i] OF
       'ASCII_Boolean':                   values += ', 0B '
-      'ASCII_Integer':                   values += ', LONARR'+reps
-      'ASCII_NonNegative_Integer':       values += ', LONARR'+reps
+      'ASCII_Integer':                   values += ', LON64ARR'+reps
+      'ASCII_NonNegative_Integer':       values += ', ULON64ARR'+reps
       'ASCII_Real':                      values += ', DBLARR'+reps
       'ASCII_Numeric_Base2':             values += ', STRARR'+reps
       'ASCII_Numeric_Base8':             values += ', LONARR'+reps
